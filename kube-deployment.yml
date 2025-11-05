@@ -103,6 +103,29 @@ spec:
     requests:
       storage: 1Gi
 
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  # The storage capacity must be equal to or greater than the PVC's request (1Gi)
+  capacity:
+    storage: 1Gi
+  # The access mode must include the one requested by the PVC (ReadWriteOnce)
+  accessModes:
+    - ReadWriteOnce
+  # A StorageClass is optional but recommended.
+  # If the PVC doesn't specify one, the PV can omit it, or they can both omit it (as shown here).
+  # If the PVC *did* specify a storageClassName, the PV would need to match it.
+  # storageClassName: "" 
+  
+  # The actual volume type (e.g., hostPath, nfs, awsElasticBlockStore, etc.)
+  # hostPath is for simple testing/single-node environments ONLY.
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    # Ensure this path exists on your node!
+    path: "/mnt/data/postgres-data"
 # result
 ---
 apiVersion: v1
