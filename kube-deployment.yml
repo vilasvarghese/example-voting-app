@@ -181,13 +181,6 @@ spec:
         ports:
         - containerPort: 80
           name: result
-        volumeMounts:
-        - name: vault-secrets
-          mountPath: /vault/secrets
-          readOnly: true
-      volumes:
-      - name: vault-secrets
-        emptyDir: {}
 
 # vote
 ---
