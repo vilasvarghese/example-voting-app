@@ -156,15 +156,38 @@ spec:
       app: result
   template:
     metadata:
+      annotations:
+        # Enable Vault Agent Injection
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+
+        # Inject DB secret from Vault
+        vault.hashicorp.com/agent-inject-secret-dbcreds: "secret/data/dbcreds"
+        vault.hashicorp.com/agent-inject-template-dbcreds: |
+          {{- with secret "secret/data/dbcreds" -}}
+          username={{ .Data.data.username }}
+          password={{ .Data.data.password }}
+          {{- end }}
+
+        # Vault role for service account
+        vault.hashicorp.com/role: "vault-role"
       labels:
         app: result
     spec:
+      serviceAccountName: vault-serviceaccount
       containers:
       - name: result
         image: scalerdockerimages/project:v1
         ports:
         - containerPort: 80
           name: result
+        volumeMounts:
+        - name: vault-secrets
+          mountPath: /vault/secrets
+          readOnly: true
+      volumes:
+      - name: vault-secrets
+        emptyDir: {}
 
 # vote
 ---
